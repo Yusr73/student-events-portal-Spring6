@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{search.title}">Search Events</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: #1a3a2a;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo { font-size: 1.25rem; font-weight: 600; }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .language-selector { display: flex; gap: 0.5rem; }
+        .lang-btn {
+            background: none;
+            border: 1px solid #d0e0c8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+        }
+        .user-badge {
+            background-color: #2a5a3a;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; flex: 1; }
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e8dc;
+            margin-bottom: 2rem;
+        }
+        .search-form { display: flex; gap: 1rem; }
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d0e0c8;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .search-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #1a5a2a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .category-filters {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border: 1px solid #d0e0c8;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #1a3a2a;
+            font-size: 0.85rem;
+        }
+        .filter-btn:hover {
+            background-color: #1a5a2a;
+            color: white;
+            border-color: #1a5a2a;
+        }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+        .event-card {
+            background: white;
+            border: 1px solid #e0e8dc;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .event-title { font-size: 1.25rem; font-weight: 600; color: #1a3a2a; margin-bottom: 0.5rem; }
+        .event-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .type-conference { background: #e3f2fd; color: #1565c0; }
+        .type-workshop { background: #e8f5e9; color: #2e7d32; }
+        .type-social { background: #fce4ec; color: #c62828; }
+        .event-detail { color: #5a6a5a; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .no-results { text-align: center; padding: 3rem; color: #6a7a6a; }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #e0e8dc;
+            color: #6a7a6a;
+            font-size: 0.75rem;
+        }
+        .result-count {
+            margin-bottom: 1rem;
+            color: #5a6a5a;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Student Events Portal</div>
+        <div class="language-selector">
+            <button class="lang-btn" onclick="changeLanguage('fr')">FR</button>
+            <button class="lang-btn" onclick="changeLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="changeLanguage('ar')">AR</button>
+        </div>
+        <div class="nav">
+            <span class="user-badge" th:text="#{home.connected} + ' ' + ${userNom}"></span>
+            <a href="/" th:text="#{nav.accueil}">Home</a>
+            <a href="/deconnexion" th:text="#{nav.deconnexion}">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="search-section">
+        <form class="search-form" method="get" action="/recherche">
+            <input type="text" name="keyword" class="search-input" th:placeholder="#{search.placeholder}" th:value="${keyword}">
+            <button type="submit" class="search-btn" th:text="#{btn.search}">Search</button>
+        </form>
+
+        <div class="category-filters">
+            <a href="/recherche" class="filter-btn" th:text="#{search.all}">All Events</a>
+            <a href="/recherche?type=conference" class="filter-btn" th:text="#{event.conferences}">Conferences</a>
+            <a href="/recherche?type=workshop" class="filter-btn" th:text="#{event.workshops}">Workshops</a>
+            <a href="/recherche?type=social" class="filter-btn" th:text="#{event.social}">Social Events</a>
+        </div>
+    </div>
+
+    <div class="result-count" th:if="${not events.empty}">
+        <span th:text="${events.size()} + ' ' + #{search.found}"></span>
+    </div>
+
+    <div th:if="${events.empty}" class="no-results">
+        <p th:text="#{search.noresults}">No events found.</p>
+        <a href="/recherche" style="color: #1a6a2a;" th:text="#{search.clear}">Clear filters</a>
+    </div>
+
+    <div class="events-grid" th:unless="${events.empty}">
+        <div th:each="event : ${events}" class="event-card">
+            <div class="event-title" th:text="${event.titre}">Title</div>
+            <span class="event-type" th:classappend="'type-' + ${event.type}" th:text="${event.type}">Type</span>
+            <div class="event-detail" th:text="#{event.date} + ': ' + ${event.date}">Date</div>
+            <div class="event-detail" th:text="#{event.location} + ': ' + ${event.lieu}">Location</div>
+            <p class="event-detail" th:text="${event.description}">Description</p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p th:text="#{footer.text}">Student Events Portal | Academic Year 2025-2026</p>
+</footer>
+
+<script>
+    function changeLanguage(lang) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{login.title}">Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: #1a3a2a;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo { font-size: 1.25rem; font-weight: 600; }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .language-selector { display: flex; gap: 0.5rem; }
+        .lang-btn {
+            background: none;
+            border: 1px solid #d0e0c8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+        }
+        .login-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .login-card {
+            background: white;
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e0e8dc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .login-card h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.5rem; color: #1a3a2a; }
+        .login-card .subtitle { color: #5a6a5a; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; color: #2a3a2a; }
+        input {
+            width: 100%;
+            padding: 0.7rem 0.85rem;
+            border: 1px solid #d0e0c8;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        input:focus { outline: none; border-color: #1a6a2a; }
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #1a5a2a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-login:hover { background-color: #0e3a1a; }
+        .error-message {
+            background-color: #fef5f0;
+            border-left: 4px solid #c62828;
+            padding: 0.75rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            color: #c62828;
+        }
+        .register-link { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; }
+        .register-link a { color: #1a6a2a; text-decoration: none; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #6a7a6a;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #e0e8dc;
+            color: #6a7a6a;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-content">
+        <div class="logo">Student Events Portal</div>
+        <div class="language-selector">
+            <button class="lang-btn" onclick="changeLanguage('fr')">FR</button>
+            <button class="lang-btn" onclick="changeLanguage('en')">EN</button>
+            <button class="lang-btn" onclick="changeLanguage('ar')">AR</button>
+        </div>
+        <div class="nav">
+            <a href="/" th:text="#{nav.accueil}">Home</a>
+            <a href="/connexion" th:text="#{nav.connexion}">Login</a>
+            <a href="/inscription" th:text="#{nav.inscription}">Register</a>
+        </div>
+    </div>
+</header>
+
+<div class="login-container">
+    <div class="login-card">
+        <h1 th:text="#{login.title}">Login</h1>
+        <p class="subtitle" th:text="#{login.subtitle}">Access your student account</p>
+
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+        <form method="post" action="/connexion">
+            <div class="form-group">
+                <label th:text="#{login.email}">Email address</label>
+                <input type="email" name="email" th:placeholder="#{placeholder.email}" required/>
+            </div>
+            <div class="form-group">
+                <label th:text="#{login.password}">Password</label>
+                <input type="password" name="password" th:placeholder="#{placeholder.password}" required/>
+            </div>
+            <button type="submit" class="btn-login" th:text="#{login.button}">Login</button>
+        </form>
+
+        <div class="register-link">
+            <span th:text="#{login.noaccount}">Don't have an account?</span>
+            <a href="/inscription" th:text="#{login.registerlink}">Register</a>
+        </div>
+
+        <a href="/" class="back-link" th:text="#{login.back}">← Back to home</a>
+    </div>
+</div>
+
+<footer class="footer">
+    <p th:text="#{footer.text}">Student Events Portal | Academic Year 2025-2026</p>
+</footer>
+
+<script>
+    function changeLanguage(lang) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+</script>
+
+</body>
+</html>

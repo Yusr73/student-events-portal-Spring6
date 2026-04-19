@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{home.title}">Student Events Portal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #ffffff;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+    .header {
+      background-color: #1a3a2a;
+      color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo { font-size: 1.25rem; font-weight: 600; }
+    .nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .nav a:hover { text-decoration: underline; }
+    .language-selector { display: flex; gap: 0.5rem; }
+    .lang-btn {
+      background: none;
+      border: 1px solid #d0e0c8;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: white;
+    }
+    .lang-btn:hover { background-color: #2a5a3a; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .hero {
+      background: linear-gradient(135deg, #f5f7f5 0%, #e8efe5 100%);
+      padding: 3rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      text-align: center;
+      border: 1px solid #d0e0c8;
+    }
+    .hero h1 { font-size: 2.5rem; font-weight: 600; margin-bottom: 1rem; color: #1a3a2a; }
+    .hero p { font-size: 1.1rem; color: #2a4a3a; max-width: 600px; margin: 0 auto; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card {
+      background: white;
+      border: 1px solid #e0e8dc;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+    .card:hover { border-color: #2a6a3a; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #1a3a2a; }
+    .card p { color: #4a5a4a; font-size: 0.9rem; margin-bottom: 1rem; }
+    .badge {
+      display: inline-block;
+      background-color: #e8f0e5;
+      color: #1a5a2a;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background-color: #1a5a2a; color: white; }
+    .btn-primary:hover { background-color: #0e3a1a; }
+    .btn-outline { background-color: transparent; border: 1px solid #1a5a2a; color: #1a5a2a; }
+    .btn-outline:hover { background-color: #1a5a2a; color: white; }
+    .user-info {
+      background-color: #f0f5ed;
+      border-left: 4px solid #1a6a2a;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid #e0e8dc;
+      margin-top: 2rem;
+      color: #6a7a6a;
+      font-size: 0.8rem;
+    }
+    .event-list {
+      margin-top: 1rem;
+    }
+    .event-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e0e8dc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .event-item-title {
+      font-weight: 500;
+      color: #1a3a2a;
+    }
+    .event-item-date {
+      font-size: 0.8rem;
+      color: #6a7a6a;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .hero { padding: 1.5rem; }
+      .hero h1 { font-size: 1.75rem; }
+      .header-content { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-content">
+    <div class="logo">Student Events Portal</div>
+    <div class="language-selector">
+      <button class="lang-btn" onclick="changeLanguage('fr')">FR</button>
+      <button class="lang-btn" onclick="changeLanguage('en')">EN</button>
+      <button class="lang-btn" onclick="changeLanguage('ar')">AR</button>
+    </div>
+    <div class="nav">
+      <a href="/" th:text="#{nav.accueil}">Home</a>
+      <a th:if="${user == null}" href="/connexion" th:text="#{nav.connexion}">Login</a>
+      <a th:if="${user == null}" href="/inscription" th:text="#{nav.inscription}">Register</a>
+      <a th:if="${user != null}" href="/deconnexion" th:text="#{nav.deconnexion}">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- LOGGED OUT USERS -->
+  <div th:if="${user == null}">
+    <div class="hero">
+      <h1 th:text="#{home.title}">Student Events Portal</h1>
+      <p th:text="#{home.subtitle}">Discover conferences, workshops, and social events organized by and for students.</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3 th:text="#{event.conferences}">Conferences</h3>
+        <span class="badge" th:text="${conferenceCount} + ' ' + #{event.events}">0 events</span>
+        <p th:text="#{event.conferences.desc}">Academic conferences with experts and researchers.</p>
+        <a href="/connexion" class="btn btn-outline" th:text="#{btn.browse}">Browse</a>
+      </div>
+      <div class="card">
+        <h3 th:text="#{event.workshops}">Workshops</h3>
+        <span class="badge" th:text="${workshopCount} + ' ' + #{event.events}">0 events</span>
+        <p th:text="#{event.workshops.desc}">Hands-on sessions to develop practical skills.</p>
+        <a href="/connexion" class="btn btn-outline" th:text="#{btn.browse}">Browse</a>
+      </div>
+      <div class="card">
+        <h3 th:text="#{event.social}">Social Events</h3>
+        <span class="badge" th:text="${socialCount} + ' ' + #{event.events}">0 events</span>
+        <p th:text="#{event.social.desc}">Networking, parties, and cultural activities.</p>
+        <a href="/connexion" class="btn btn-outline" th:text="#{btn.browse}">Browse</a>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3 th:text="#{home.getstarted}">Get Started</h3>
+        <p th:text="#{home.createaccount}">Create an account to access all events and personalize your experience.</p>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <a href="/connexion" class="btn btn-primary" th:text="#{home.login}">Login</a>
+          <a href="/inscription" class="btn btn-outline" th:text="#{home.register}">Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGGED IN USERS -->
+  <div th:if="${user != null}">
+    <div class="user-info">
+      <span th:text="#{home.connected}"></span> <strong th:text="${user}"></strong>
+    </div>
+
+    <div class="hero">
+      <h1 th:text="#{home.welcome} + ' ' + ${user} + '!'">Welcome back!</h1>
+      <p th:text="#{home.findevents}">Find and register for events that interest you.</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3 th:text="#{home.search}">Search Events</h3>
+        <p th:text="#{home.searchdesc}">Find events by keyword.</p>
+        <form action="/recherche" method="get" style="margin-top: 1rem;">
+          <input type="text" name="keyword" th:placeholder="#{search.placeholder}"
+                 style="width: 100%; padding: 0.5rem; margin-bottom: 0.75rem; border: 1px solid #d0e0c8; border-radius: 4px;">
+          <button type="submit" class="btn btn-primary" style="width: 100%;" th:text="#{btn.search}">Search</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 th:text="#{home.browsecategory}">Browse by Category</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <a href="/recherche?type=conference" class="btn btn-outline" th:text="#{event.conferences}">Conferences</a>
+          <a href="/recherche?type=workshop" class="btn btn-outline" th:text="#{event.workshops}">Workshops</a>
+          <a href="/recherche?type=social" class="btn btn-outline" th:text="#{event.social}">Social Events</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 th:text="#{home.allevents}">All Events</h3>
+        <div class="event-list">
+          <div th:each="event,iterStat : ${allEvents}" th:if="${iterStat.index < 3}" class="event-item">
+            <span class="event-item-title" th:text="${event.titre}">Event</span>
+            <span class="event-item-date" th:text="${event.date}">Date</span>
+          </div>
+        </div>
+        <a href="/recherche" class="btn btn-outline" style="margin-top: 1rem; display: inline-block;" th:text="#{btn.viewall}">View All Events</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p th:text="#{footer.text}">Student Events Portal | Academic Year 2025-2026</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    var url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    window.location.href = url.toString();
+  }
+</script>
+
+</body>
+</html>
