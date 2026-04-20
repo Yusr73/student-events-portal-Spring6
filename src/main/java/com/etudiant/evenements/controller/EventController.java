@@ -1,6 +1,6 @@
 package com.etudiant.evenements.controller;
 
-import com.etudiant.evenements.model.Event;
+import com.etudiant.evenements.entity.Event;
 import com.etudiant.evenements.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

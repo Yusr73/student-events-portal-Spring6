@@ -1,14 +1,25 @@
-package com.etudiant.evenements.model;
+package com.etudiant.evenements.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "events")
 public class Event {
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String titre;
+
+    @Column(length = 500)
     private String description;
+
     private String type;
     private String date;
     private String lieu;
 
-    // Constructors
     public Event() {}
 
     public Event(String titre, String description, String type, String date, String lieu) {
@@ -20,8 +31,8 @@ public class Event {
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getTitre() { return titre; }
     public void setTitre(String titre) { this.titre = titre; }

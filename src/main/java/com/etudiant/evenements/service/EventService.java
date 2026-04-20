@@ -1,6 +1,6 @@
 package com.etudiant.evenements.service;
 
-import com.etudiant.evenements.model.Event;
+import com.etudiant.evenements.entity.Event;
 import com.etudiant.evenements.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +19,7 @@ public class EventService {
         return eventRepository.search(keyword.toLowerCase().trim());
     }
 
-    // Add this missing method
     public List<Event> getEventsByType(String type) {
-        if (type == null || type.trim().isEmpty()) {
-            return eventRepository.findAll();
-        }
         return eventRepository.findByType(type);
     }
 

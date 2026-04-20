@@ -24,17 +24,10 @@
       <version>${spring.version}</version>
     </dependency>
 
-    <!-- Spring ORM (required for JPA) -->
+    <!-- Spring ORM (for Hibernate) -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-
-    <!-- Spring JDBC for database -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
       <version>${spring.version}</version>
     </dependency>
 
@@ -52,24 +45,35 @@
       <version>8.2.0</version>
     </dependency>
 
-    <!-- Security -->
+    <!-- HikariCP Connection Pool -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>5.1.0</version>
+    </dependency>
+
+    <!-- SLF4J Logger -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+
+    <!-- Security (BCrypt) -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
       <version>6.1.4</version>
     </dependency>
 
-    <!-- JPA / Hibernate Search -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-      <version>3.1.5</version>
-    </dependency>
+    <!-- Hibernate Core -->
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>6.4.4.Final</version>
     </dependency>
+
+    <!-- Jakarta Persistence API -->
     <dependency>
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
@@ -84,7 +88,7 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Jakarta Annotation API (for @PostConstruct) -->
+    <!-- Jakarta Annotation API -->
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>

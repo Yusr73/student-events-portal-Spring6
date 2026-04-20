@@ -1,10 +1,10 @@
 package com.etudiant.evenements.service;
 
-import com.etudiant.evenements.model.User;
+import com.etudiant.evenements.entity.User;
 import com.etudiant.evenements.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -33,7 +33,6 @@ public class UserService {
             return false;
         }
 
-        // Hash the password before saving
         String hashedPassword = encoder.encode(password);
         User user = new User(nom, email, hashedPassword);
         userRepository.save(user);
@@ -48,7 +47,6 @@ public class UserService {
         return null;
     }
 
-    // Method for remember me functionality
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }

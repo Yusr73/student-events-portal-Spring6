@@ -1,80 +1,75 @@
 package com.etudiant.evenements.repository;
 
-import com.etudiant.evenements.model.Event;
+import com.etudiant.evenements.entity.Event;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import jakarta.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
+@Transactional
 public class EventRepository {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private SessionFactory sessionFactory;
 
-    @PostConstruct
-    public void init() {
-        createTable();
+    public void save(Event event) {
+        sessionFactory.getCurrentSession().persist(event);
     }
 
-    private void createTable() {
-        String sql = """
-            CREATE TABLE IF NOT EXISTS events (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                titre VARCHAR(200) NOT NULL,
-                description VARCHAR(500),
-                type VARCHAR(50),
-                date VARCHAR(50),
-                lieu VARCHAR(200)
-            )
-        """;
-        jdbcTemplate.execute(sql);
+    public List<Event> findAll() {
+        String hql = "FROM Event ORDER BY date ASC";
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql, Event.class)
+                .getResultList();
     }
 
-    // WORKING SEARCH - simple version
     public List<Event> search(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
+        if (keyword == null || keyword.trim().length() < 2) {
             return findAll();
         }
 
-        String sql = "SELECT * FROM events WHERE " +
-                "LOWER(titre) LIKE ? OR " +
-                "LOWER(description) LIKE ? OR " +
-                "LOWER(type) LIKE ?";
+        String searchTerm = keyword.toLowerCase().trim();
 
-        String searchPattern = "%" + keyword.toLowerCase().trim() + "%";
-        return jdbcTemplate.query(sql, new EventRowMapper(),
-                searchPattern, searchPattern, searchPattern);
+        // HQL query with case-insensitive search
+        String hql = "FROM Event e WHERE " +
+                "LOWER(e.titre) LIKE :pattern1 OR " +
+                "LOWER(e.description) LIKE :pattern1 OR " +
+                "LOWER(e.type) LIKE :pattern1";
+
+        String pattern = "%" + searchTerm + "%";
+
+        TypedQuery<Event> query = sessionFactory.getCurrentSession()
+                .createQuery(hql, Event.class);
+        query.setParameter("pattern1", pattern);
+
+        return query.getResultList();
     }
 
     public List<Event> findByType(String type) {
         if (type == null || type.trim().isEmpty()) {
             return findAll();
         }
-        String sql = "SELECT * FROM events WHERE LOWER(type) = ? ORDER BY date ASC";
-        return jdbcTemplate.query(sql, new EventRowMapper(), type.toLowerCase());
+
+        String hql = "FROM Event WHERE LOWER(type) = :type ORDER BY date ASC";
+
+        TypedQuery<Event> query = sessionFactory.getCurrentSession()
+                .createQuery(hql, Event.class);
+        query.setParameter("type", type.toLowerCase());
+
+        return query.getResultList();
     }
 
-    public List<Event> findAll() {
-        String sql = "SELECT * FROM events ORDER BY date ASC";
-        return jdbcTemplate.query(sql, new EventRowMapper());
+    public Event findById(Long id) {
+        return sessionFactory.getCurrentSession().get(Event.class, id);
     }
 
-    private static class EventRowMapper implements RowMapper<Event> {
-        @Override
-        public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Event event = new Event();
-            event.setId(rs.getInt("id"));
-            event.setTitre(rs.getString("titre"));
-            event.setDescription(rs.getString("description"));
-            event.setType(rs.getString("type"));
-            event.setDate(rs.getString("date"));
-            event.setLieu(rs.getString("lieu"));
-            return event;
+    public void deleteById(Long id) {
+        Event event = findById(id);
+        if (event != null) {
+            sessionFactory.getCurrentSession().remove(event);
         }
     }
 }

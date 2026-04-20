@@ -1,6 +1,6 @@
 package com.etudiant.evenements.controller;
 
-import com.etudiant.evenements.model.User;
+import com.etudiant.evenements.entity.User;
 import com.etudiant.evenements.service.UserService;
 import com.etudiant.evenements.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;

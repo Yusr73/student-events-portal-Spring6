@@ -1,6 +1,6 @@
 package com.etudiant.evenements.validator;
 
-import com.etudiant.evenements.model.User;
+import com.etudiant.evenements.entity.User;
 import com.etudiant.evenements.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
