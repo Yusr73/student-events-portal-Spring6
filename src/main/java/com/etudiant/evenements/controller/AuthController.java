@@ -2,7 +2,6 @@ package com.etudiant.evenements.controller;
 
 import com.etudiant.evenements.entity.User;
 import com.etudiant.evenements.service.UserService;
-import com.etudiant.evenements.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class AuthController {
@@ -22,11 +22,9 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private UserValidator userValidator;
-
-    @Autowired
     private MessageSource messageSource;
 
+    // ========== REGISTRATION ==========
     @GetMapping("/inscription")
     public String showInscription(Model model) {
         model.addAttribute("user", new User());
@@ -34,15 +32,22 @@ public class AuthController {
     }
 
     @PostMapping("/inscription")
-    public String processInscription(@ModelAttribute("user") User user,
+    public String processInscription(@Valid @ModelAttribute("user") User user,
                                      BindingResult result,
                                      Model model) {
-        userValidator.validate(user, result);
-
+        // Check validation errors
         if (result.hasErrors()) {
             return "inscription";
         }
 
+        // Check if email already exists
+        if (userService.emailExists(user.getEmail())) {
+            String errorMsg = messageSource.getMessage("error.email.exists", null, LocaleContextHolder.getLocale());
+            model.addAttribute("error", errorMsg);
+            return "inscription";
+        }
+
+        // Register the user
         boolean success = userService.register(user.getNom(), user.getEmail(), user.getPassword());
 
         if (success) {
@@ -56,21 +61,29 @@ public class AuthController {
         }
     }
 
+    // ========== LOGIN ==========
     @GetMapping("/connexion")
-    public String showConnexion() {
+    public String showConnexion(Model model) {
+        model.addAttribute("user", new User());
         return "connexion";
     }
 
     @PostMapping("/connexion")
-    public String processConnexion(@RequestParam("email") String email,
-                                   @RequestParam("password") String password,
+    public String processConnexion(@Valid @ModelAttribute("user") User user,
+                                   BindingResult result,
                                    HttpSession session,
                                    Model model) {
-        User user = userService.login(email, password);
+        // Check validation errors (email format, password not empty)
+        if (result.hasErrors()) {
+            return "connexion";
+        }
 
-        if (user != null) {
-            session.setAttribute("userId", user.getEmail());
-            session.setAttribute("userNom", user.getNom());
+        // Check credentials against database
+        User loggedInUser = userService.login(user.getEmail(), user.getPassword());
+
+        if (loggedInUser != null) {
+            session.setAttribute("userId", loggedInUser.getEmail());
+            session.setAttribute("userNom", loggedInUser.getNom());
             session.setMaxInactiveInterval(3600);
             return "redirect:/";
         } else {
@@ -80,6 +93,7 @@ public class AuthController {
         }
     }
 
+    // ========== LOGOUT ==========
     @GetMapping("/deconnexion")
     public String deconnexion(HttpSession session) {
         session.invalidate();

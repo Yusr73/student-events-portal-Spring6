@@ -63,7 +63,7 @@ public class AppConfig implements WebMvcConfigurer {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("i18n/messages"); // files in resources/i18n/messages_fr.properties etc.
         messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setUseCodeAsDefaultMessage(true);
+        messageSource.setUseCodeAsDefaultMessage(false);
         return messageSource;
     }
 

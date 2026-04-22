@@ -50,4 +50,9 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    // ADD THIS METHOD
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
