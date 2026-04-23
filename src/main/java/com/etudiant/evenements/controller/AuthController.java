@@ -1,5 +1,6 @@
 package com.etudiant.evenements.controller;
 
+import com.etudiant.evenements.dto.LoginDTO;
 import com.etudiant.evenements.entity.User;
 import com.etudiant.evenements.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -35,19 +35,16 @@ public class AuthController {
     public String processInscription(@Valid @ModelAttribute("user") User user,
                                      BindingResult result,
                                      Model model) {
-        // Check validation errors
         if (result.hasErrors()) {
             return "inscription";
         }
 
-        // Check if email already exists
         if (userService.emailExists(user.getEmail())) {
             String errorMsg = messageSource.getMessage("error.email.exists", null, LocaleContextHolder.getLocale());
             model.addAttribute("error", errorMsg);
             return "inscription";
         }
 
-        // Register the user
         boolean success = userService.register(user.getNom(), user.getEmail(), user.getPassword());
 
         if (success) {
@@ -64,22 +61,20 @@ public class AuthController {
     // ========== LOGIN ==========
     @GetMapping("/connexion")
     public String showConnexion(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("loginDTO", new LoginDTO());
         return "connexion";
     }
 
     @PostMapping("/connexion")
-    public String processConnexion(@Valid @ModelAttribute("user") User user,
+    public String processConnexion(@Valid @ModelAttribute("loginDTO") LoginDTO loginDTO,
                                    BindingResult result,
                                    HttpSession session,
                                    Model model) {
-        // Check validation errors (email format, password not empty)
         if (result.hasErrors()) {
             return "connexion";
         }
 
-        // Check credentials against database
-        User loggedInUser = userService.login(user.getEmail(), user.getPassword());
+        User loggedInUser = userService.login(loginDTO.getEmail(), loginDTO.getPassword());
 
         if (loggedInUser != null) {
             session.setAttribute("userId", loggedInUser.getEmail());

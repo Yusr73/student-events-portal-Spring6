@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="#{login.title}">Login</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -101,7 +100,6 @@
         }
         .register-link { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; }
         .register-link a { color: #1a6a2a; text-decoration: none; }
-        .register-link a:hover { text-decoration: underline; }
         .back-link {
             display: block;
             text-align: center;
@@ -110,7 +108,6 @@
             color: #6a7a6a;
             text-decoration: none;
         }
-        .back-link:hover { color: #1a6a2a; }
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -145,7 +142,7 @@
 
         <div th:if="${error}" class="error-message" th:text="${error}"></div>
 
-        <form method="post" action="/connexion" th:object="${user}">
+        <form method="post" action="/connexion" th:object="${loginDTO}">
             <div class="form-group">
                 <label th:text="#{login.email}">Email address</label>
                 <input type="email" th:field="*{email}" th:placeholder="#{placeholder.email}"/>
